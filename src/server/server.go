@@ -1,18 +1,17 @@
 package server
 
 import (
-	"fmt"
 	"net/http"
 
+	"encoding/json"
+
 	"github.com/gorilla/mux"
-	"github.com/jmoiron/sqlx"
 	"github.com/spolyakovs/wb-internship-l0/src/store"
 )
 
 type server struct {
-	router     *mux.Router
-	store      store.Store
-	sessionKey []byte
+	router *mux.Router
+	store  store.Store
 }
 
 func newServer(st store.Store) *server {
@@ -26,36 +25,18 @@ func newServer(st store.Store) *server {
 	return srv
 }
 
-func (server *server) ServeHTTP(writer http.ResponseWriter, req *http.Request) {
-	server.router.ServeHTTP(writer, req)
+func (server *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	server.router.ServeHTTP(w, r)
 }
 
-func Start(config Config) error {
-	db, err := newDB(config)
-	if err != nil {
-		return err
-	}
-
-	defer db.Close()
-
-	st := *store.New(db)
-
-	srv := newServer(st)
-
-	return http.ListenAndServe(config.BindAddr, srv)
+func (server *server) error(w http.ResponseWriter, r *http.Request, code int, err error) {
+	server.respond(w, r, code, map[string]string{"error": err.Error()})
 }
 
-func newDB(config Config) (*sqlx.DB, error) {
-	dbURL := fmt.Sprintf("host=%s dbname=%s user=%s password=%s sslmode=%s",
-		config.DatabaseHost, config.DatabaseDBName, config.DatabaseUser, config.DatabasePassword, config.DatabaseSSLMode)
-	db, err := sqlx.Open("postgres", dbURL)
-	if err != nil {
-		return nil, err
+func (server *server) respond(w http.ResponseWriter, r *http.Request, code int, data interface{}) {
+	w.WriteHeader(code)
+	w.Header().Set("Content-Type", "application/json")
+	if data != nil {
+		json.NewEncoder(w).Encode(data)
 	}
-
-	if err := db.Ping(); err != nil {
-		return nil, err
-	}
-
-	return db, nil
 }

@@ -1,10 +1,6 @@
-# TODO
-
-CONFIG_PATH?=configs/local.toml
-
 .PHONY: build
 build:
-	go build -o ./bin/wb-internship-l0 ./cmd/apiserver
+	go build -o ./bin/wb-internship-l0 ./main.go
 
 .PHONY: test
 test:
@@ -14,6 +10,6 @@ test:
 .PHONY: start
 start:
 	make build
-	./apiserver -config-path=$(CONFIG_PATH)
+	./bin/wb-internship-l0
 
 .DEFAULT_GOAL := start

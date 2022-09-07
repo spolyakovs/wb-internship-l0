@@ -4,8 +4,9 @@ import (
 	"net/http"
 )
 
-func (srv *server) handleGet() http.HandlerFunc {
-	return func(writer http.ResponseWriter, req *http.Request) {
+func (srv *server) handleHello() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		srv.respond(w, r, http.StatusOK, "Hello")
 		return
 	}
 }

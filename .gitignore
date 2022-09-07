@@ -15,4 +15,7 @@
 # vendor/
 
 configs/*
+!configs/example.toml
+
 go.sum
+bin/wb-internship-l0
