@@ -5,8 +5,11 @@ import (
 )
 
 type Store struct {
-	db *sql.DB
-	// userRepository *UserRepository
+	db                 *sql.DB
+	deliveryRepository *deliveryRepository
+	itemRepository     *itemRepository
+	paymentRepository  *paymentRepository
+	orderRepository    *orderRepository
 }
 
 func New(db *sql.DB) *Store {
@@ -17,14 +20,42 @@ func New(db *sql.DB) *Store {
 	return newStore
 }
 
-// func (st *Store) Users() store.UserRepository {
-// 	if st.userRepository != nil {
-// 		return st.userRepository
-// 	}
+func (st *Store) Deliveries() deliveryRepository {
+	if st.deliveryRepository == nil {
+		st.deliveryRepository = &deliveryRepository{
+			store: st,
+		}
+	}
 
-// 	st.userRepository = &UserRepository{
-// 		store: st,
-// 	}
+	return *(st.deliveryRepository)
+}
 
-// 	return st.userRepository
-// }
+func (st *Store) Items() itemRepository {
+	if st.itemRepository == nil {
+		st.itemRepository = &itemRepository{
+			store: st,
+		}
+	}
+
+	return *(st.itemRepository)
+}
+
+func (st *Store) Payments() paymentRepository {
+	if st.paymentRepository == nil {
+		st.paymentRepository = &paymentRepository{
+			store: st,
+		}
+	}
+
+	return *(st.paymentRepository)
+}
+
+func (st *Store) Orders() orderRepository {
+	if st.orderRepository == nil {
+		st.orderRepository = &orderRepository{
+			store: st,
+		}
+	}
+
+	return *(st.orderRepository)
+}

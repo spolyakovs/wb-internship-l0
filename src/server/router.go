@@ -1,5 +1,7 @@
 package server
 
-func (srv *server) configureRouter() {
-	srv.router.HandleFunc("/", srv.handleHello()).Methods("GET")
+import "context"
+
+func (srv *server) configureRouter(ctx context.Context) {
+	srv.router.HandleFunc("/", srv.handleHello(ctx)).Methods("GET")
 }

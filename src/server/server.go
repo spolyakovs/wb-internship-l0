@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"net/http"
 
 	"encoding/json"
@@ -14,26 +15,26 @@ type server struct {
 	store  store.Store
 }
 
-func newServer(st store.Store) *server {
+func newServer(ctx context.Context, st store.Store) *server {
 	srv := &server{
 		router: mux.NewRouter(),
 		store:  st,
 	}
 
-	srv.configureRouter()
+	srv.configureRouter(ctx)
 
 	return srv
 }
 
-func (server *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	server.router.ServeHTTP(w, r)
+func (server *server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	server.router.ServeHTTP(w, req)
 }
 
-func (server *server) error(w http.ResponseWriter, r *http.Request, code int, err error) {
-	server.respond(w, r, code, map[string]string{"error": err.Error()})
+func (server *server) error(w http.ResponseWriter, req *http.Request, code int, err error) {
+	server.respond(w, req, code, map[string]string{"error": err.Error()})
 }
 
-func (server *server) respond(w http.ResponseWriter, r *http.Request, code int, data interface{}) {
+func (server *server) respond(w http.ResponseWriter, req *http.Request, code int, data interface{}) {
 	w.WriteHeader(code)
 	w.Header().Set("Content-Type", "application/json")
 	if data != nil {
