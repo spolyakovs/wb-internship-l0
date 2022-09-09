@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/spolyakovs/wb-internship-l0/src/model"
+	"github.com/spolyakovs/wb-internship-l0/internal/model"
 )
 
 type orderRepository struct {
@@ -33,17 +33,17 @@ func (o orderRepository) Create(ctx context.Context, order *model.Order) error {
 		"VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13);"
 
 	createRes, err := o.store.db.ExecContext(ctx, createQuery,
-		order.OrderUid,
+		order.OrderUID,
 		order.TrackNumber,
 		order.Entry,
-		order.Delivery.Id,
-		order.Payment.Id,
+		order.Delivery.ID,
+		order.Payment.ID,
 		order.Locale,
 		order.InternalSignature,
-		order.CustomerId,
+		order.CustomerID,
 		order.DeliveryService,
 		order.ShardKey,
-		order.SmId,
+		order.SmID,
 		order.DateCreated,
 		order.OofShard,
 	)
@@ -63,8 +63,8 @@ func (o orderRepository) Create(ctx context.Context, order *model.Order) error {
 		connectQuery := "INSERT INTO order_items (order_uid, item_id) " +
 			"VALUES ($1, $2);"
 		connectRes, err := o.store.db.ExecContext(ctx, connectQuery,
-			order.OrderUid,
-			item.Id,
+			order.OrderUID,
+			item.ID,
 		)
 		if err != nil {
 			return err
@@ -81,7 +81,7 @@ func (o orderRepository) Create(ctx context.Context, order *model.Order) error {
 	return nil
 }
 
-func (o orderRepository) FindById(ctx context.Context, id uint) (*model.Order, error) {
+func (o orderRepository) FindByID(ctx context.Context, order_uid string) (*model.Order, error) {
 	order := model.Order{}
 	var delivery_id, payment_id uint
 
@@ -89,23 +89,23 @@ func (o orderRepository) FindById(ctx context.Context, id uint) (*model.Order, e
 	findByIdQuery := "SELECT (order_uid, track_number, entry, delivery_id, payment_id, " +
 		"locale, internal_signature, customer_id, delivery_service, " +
 		"shardkey, sm_id, date_created, oof_shard) " +
-		" FROM items WHERE id = $1 LIMIT 1;"
+		" FROM items WHERE order_uid = $1 LIMIT 1;"
 
 	if err := o.store.db.QueryRowContext(ctx,
 		findByIdQuery,
-		id,
+		order_uid,
 	).Scan(
-		&order.OrderUid,
+		&order.OrderUID,
 		&order.TrackNumber,
 		&order.Entry,
 		&delivery_id,
 		&payment_id,
 		&order.Locale,
 		&order.InternalSignature,
-		&order.CustomerId,
+		&order.CustomerID,
 		&order.DeliveryService,
 		&order.ShardKey,
-		&order.SmId,
+		&order.SmID,
 		&order.DateCreated,
 		&order.OofShard,
 	); err != nil {
@@ -113,21 +113,21 @@ func (o orderRepository) FindById(ctx context.Context, id uint) (*model.Order, e
 	}
 
 	// Finding delivery by id
-	delivery, err := o.store.Deliveries().FindById(ctx, delivery_id)
+	delivery, err := o.store.Deliveries().FindByID(ctx, delivery_id)
 	if err != nil {
 		return nil, err
 	}
 	order.Delivery = delivery
 
 	// And payment
-	payment, err := o.store.Payments().FindById(ctx, payment_id)
+	payment, err := o.store.Payments().FindByID(ctx, payment_id)
 	if err != nil {
 		return nil, err
 	}
 	order.Payment = payment
 
 	// and all items for this order
-	items, err := o.store.Items().FindAllByOrderUid(ctx, order.OrderUid)
+	items, err := o.store.Items().FindAllByOrderUID(ctx, order.OrderUID)
 	if err != nil {
 		return nil, err
 	}

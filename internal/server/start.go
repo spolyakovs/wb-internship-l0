@@ -10,11 +10,10 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/spolyakovs/wb-internship-l0/src/store"
+	"github.com/spolyakovs/wb-internship-l0/internal/store"
 )
 
 // TODO: wrap and refactor errors
-// TODO: connect to nets-streaming
 
 func Start(config Config) error {
 
@@ -26,6 +25,7 @@ func Start(config Config) error {
 
 	go func() {
 		<-appSignal
+		close(appSignal)
 		stop()
 		os.Exit(0)
 	}()
@@ -38,6 +38,10 @@ func Start(config Config) error {
 	defer db.Close()
 
 	st := *store.New(db)
+
+	if err := stanSubscribe(ctx, config); err != nil {
+		return err
+	}
 
 	srv := newServer(ctx, st)
 

@@ -3,7 +3,7 @@ package store
 import (
 	"context"
 
-	"github.com/spolyakovs/wb-internship-l0/src/model"
+	"github.com/spolyakovs/wb-internship-l0/internal/model"
 )
 
 type deliveryRepository struct {
@@ -23,14 +23,14 @@ func (d deliveryRepository) Create(ctx context.Context, delivery *model.Delivery
 		delivery.Address,
 		delivery.Region,
 		delivery.Email,
-	).Scan(&delivery.Id); err != nil {
+	).Scan(&delivery.ID); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (d deliveryRepository) FindById(ctx context.Context, id uint) (*model.Delivery, error) {
+func (d deliveryRepository) FindByID(ctx context.Context, id uint) (*model.Delivery, error) {
 	delivery := model.Delivery{}
 	findByIdQuery := "SELECT (id, name, phone, zip, city, address, region, email) " +
 		"FROM deliveries WHERE id = $1 LIMIT 1;"
@@ -38,7 +38,7 @@ func (d deliveryRepository) FindById(ctx context.Context, id uint) (*model.Deliv
 	if err := d.store.db.QueryRowContext(ctx, findByIdQuery,
 		id,
 	).Scan(
-		&delivery.Id,
+		&delivery.ID,
 		&delivery.Name,
 		&delivery.Phone,
 		&delivery.Zip,

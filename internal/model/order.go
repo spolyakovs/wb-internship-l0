@@ -1,18 +1,18 @@
 package model
 
 type Order struct {
-	OrderUid          string    `json:"order_uid"`
+	OrderUID          string    `json:"order_uid" faker:"unique"`
 	TrackNumber       string    `json:"track_number"`
 	Entry             string    `json:"entry"`
 	Delivery          *Delivery `json:"delivery"`
 	Payment           *Payment  `json:"payment"`
-	Items             []*Item   `json:"items"`
+	Items             []*Item   `json:"items" faker:"len=5"`
 	Locale            string    `json:"locale"`
 	InternalSignature string    `json:"internal_signature"`
-	CustomerId        string    `json:"customer_id"`
+	CustomerID        string    `json:"customer_id"`
 	DeliveryService   string    `json:"delivery_service"`
 	ShardKey          string    `json:"shardkey"`
-	SmId              int       `json:"sm_id"`
-	DateCreated       string    `json:"date_created"` // format "YYYY-MM-DD\THH:mm:SS?"
+	SmID              int       `json:"sm_id"`
+	DateCreated       string    `json:"date_created" faker:"customFakerTimestamp"` // format RFC3339 without timezone (2006-01-02T15:04:05Z)
 	OofShard          string    `json:"oof_shard"`
 }

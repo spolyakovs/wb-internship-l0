@@ -7,7 +7,7 @@ import (
 	"encoding/json"
 
 	"github.com/gorilla/mux"
-	"github.com/spolyakovs/wb-internship-l0/src/store"
+	"github.com/spolyakovs/wb-internship-l0/internal/store"
 )
 
 type server struct {

@@ -1,15 +1,21 @@
 .PHONY: build
 build:
-	go build -o ./bin/wb-internship-l0 ./main.go
+	go build -o ./bin/service ./service/
+	go build -o ./bin/publisher ./publisher/
 
 .PHONY: test
 test:
 	make build
 	go test -v -race -timeout 30s ./...
 
-.PHONY: start
-start:
-	make build
-	./bin/wb-internship-l0
+.PHONY: service
+service:
+	go build -o ./bin/service ./service/
+	./bin/service
 
-.DEFAULT_GOAL := start
+.PHONY: publisher
+publisher:
+	go build -o ./bin/publisher ./publisher/
+	./bin/publisher
+
+.DEFAULT_GOAL := service

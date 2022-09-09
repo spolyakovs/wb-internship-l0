@@ -3,7 +3,7 @@ package store
 import (
 	"context"
 
-	"github.com/spolyakovs/wb-internship-l0/src/model"
+	"github.com/spolyakovs/wb-internship-l0/internal/model"
 )
 
 type paymentRepository struct {
@@ -18,7 +18,7 @@ func (p paymentRepository) Create(ctx context.Context, payment *model.Payment) e
 
 	if err := p.store.db.QueryRowContext(ctx, createQuery,
 		payment.Transaction,
-		payment.RequestId,
+		payment.RequestID,
 		payment.Currency,
 		payment.Provider,
 		payment.Amount,
@@ -27,14 +27,14 @@ func (p paymentRepository) Create(ctx context.Context, payment *model.Payment) e
 		payment.DeliveryCost,
 		payment.GoodsTotal,
 		payment.CustomFee,
-	).Scan(&payment.Id); err != nil {
+	).Scan(&payment.ID); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (p paymentRepository) FindById(ctx context.Context, id uint) (*model.Payment, error) {
+func (p paymentRepository) FindByID(ctx context.Context, id uint) (*model.Payment, error) {
 	payment := model.Payment{}
 	findByIdQuery := "SELECT (id, chrt_id, track_number, price, rid, name, sale, nm_id, brand, status)" +
 		" FROM items WHERE id = $1 LIMIT 1;"
@@ -43,9 +43,9 @@ func (p paymentRepository) FindById(ctx context.Context, id uint) (*model.Paymen
 		findByIdQuery,
 		id,
 	).Scan(
-		&payment.Id,
+		&payment.ID,
 		&payment.Transaction,
-		&payment.RequestId,
+		&payment.RequestID,
 		&payment.Currency,
 		&payment.Provider,
 		&payment.Amount,
