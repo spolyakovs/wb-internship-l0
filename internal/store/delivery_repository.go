@@ -32,7 +32,8 @@ func (d deliveryRepository) Create(ctx context.Context, delivery *model.Delivery
 
 func (d deliveryRepository) FindByID(ctx context.Context, id uint) (*model.Delivery, error) {
 	delivery := model.Delivery{}
-	findByIdQuery := "SELECT (id, name, phone, zip, city, address, region, email) " +
+	findByIdQuery := "SELECT " +
+		"id, name, phone, zip, city, address, region, email " +
 		"FROM deliveries WHERE id = $1 LIMIT 1;"
 
 	if err := d.store.db.QueryRowContext(ctx, findByIdQuery,

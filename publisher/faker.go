@@ -16,5 +16,9 @@ func customFakerGenerator() error {
 	}); err != nil {
 		return err
 	}
+
+	if err := faker.SetRandomMapAndSliceSize(5); err != nil {
+		return err
+	}
 	return nil
 }

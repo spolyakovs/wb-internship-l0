@@ -2,16 +2,24 @@ package server
 
 import (
 	"context"
+	"errors"
 	"net/http"
 )
 
-func (srv *server) handleHello(ctx context.Context) http.HandlerFunc {
+func (srv *server) handleGetOrder(ctx context.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
-		// delivery := model.Delivery{}
-		// if err := srv.store.Deliveries().Create(ctx, &delivery); err != nil {
-		// 	fmt.Printf("/nError:/n/t%w", err)
-		// }
-		srv.respond(w, req, http.StatusOK, "Hello")
+		orderUID := req.URL.Query().Get("id")
+		if orderUID == "" {
+			srv.error(w, req, http.StatusBadRequest, errors.New("no order id in request"))
+			return
+		}
+
+		order, err := srv.store.Cache().Get(ctx, orderUID)
+		if err != nil {
+			srv.error(w, req, http.StatusInternalServerError, err)
+			return
+		}
+		srv.respond(w, req, http.StatusOK, &order)
 		// return
 	}
 }

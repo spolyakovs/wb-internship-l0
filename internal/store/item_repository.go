@@ -14,7 +14,7 @@ func (i itemRepository) Create(ctx context.Context, item *model.Item) error {
 	createQuery := "INSERT INTO items " +
 		"(chrt_id, track_number, price, rid, name, sale, size, " +
 		"total_price, nm_id, brand, status) " +
-		"VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id;"
+		"VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id;"
 
 	if err := i.store.db.QueryRowContext(ctx, createQuery,
 		item.ChrtID,
@@ -38,9 +38,9 @@ func (i itemRepository) Create(ctx context.Context, item *model.Item) error {
 func (i itemRepository) FindByID(ctx context.Context, id uint) (*model.Item, error) {
 	item := model.Item{}
 	findByIdQuery := "SELECT " +
-		"(id, chrt_id, track_number, price, rid, name, sale, size, " +
-		"total_price, nm_id, brand, status) " +
-		" FROM items WHERE id = $1 LIMIT 1;"
+		"id, chrt_id, track_number, price, rid, name, sale, size, " +
+		"total_price, nm_id, brand, status " +
+		"FROM items WHERE id = $1 LIMIT 1;"
 
 	if err := i.store.db.QueryRowContext(ctx,
 		findByIdQuery,
@@ -68,10 +68,10 @@ func (i itemRepository) FindByID(ctx context.Context, id uint) (*model.Item, err
 func (i itemRepository) FindAllByOrderUID(ctx context.Context, orderUid string) ([]*model.Item, error) {
 	items := make([]*model.Item, 0)
 	findByIdQuery := "SELECT " +
-		"(items.id, items.chrt_id, items.track_number, items.price, " +
-		"items.rid, items.name, items.sale, items.size, items.total_price" +
-		"items.nm_id, items.brand, items.status) " +
-		"FROM items LEFT JOIN order_items ON items.id = order_items.item_id " +
+		"items.id, items.chrt_id, items.track_number, items.price, " +
+		"items.rid, items.name, items.sale, items.size, items.total_price, " +
+		"items.nm_id, items.brand, items.status " +
+		"FROM items LEFT JOIN order_items ON id = order_items.item_id " +
 		"WHERE order_items.order_uid = $1;"
 
 	rows, err := i.store.db.QueryContext(ctx,
@@ -93,6 +93,8 @@ func (i itemRepository) FindAllByOrderUID(ctx context.Context, orderUid string) 
 			&item.RID,
 			&item.Name,
 			&item.Sale,
+			&item.Size,
+			&item.TotalPrice,
 			&item.NmID,
 			&item.Brand,
 			&item.Status,

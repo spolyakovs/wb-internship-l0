@@ -14,7 +14,7 @@ func main() {
 	configPath := "./configs/local.toml"
 	config, err := server.MakeConfigFromFile(configPath)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Config err:%v", err)
 	}
 	config.STANClientID += "-publisher"
 
@@ -31,10 +31,10 @@ func main() {
 	}()
 
 	if err := customFakerGenerator(); err != nil {
-		log.Fatal(err)
+		log.Fatalf("Faker generator err:%v", err)
 	}
 
 	if err := stanPublishRandom(ctx, config); err != nil {
-		log.Fatal(err)
+		log.Fatalf("STAN publish err:%v", err)
 	}
 }

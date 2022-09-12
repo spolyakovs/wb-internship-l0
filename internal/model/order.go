@@ -1,12 +1,12 @@
 package model
 
 type Order struct {
-	OrderUID          string    `json:"order_uid" faker:"unique"`
+	OrderUID          string    `json:"order_uid" faker:"uuid_digit,unique"`
 	TrackNumber       string    `json:"track_number"`
 	Entry             string    `json:"entry"`
 	Delivery          *Delivery `json:"delivery"`
 	Payment           *Payment  `json:"payment"`
-	Items             []*Item   `json:"items" faker:"len=5"`
+	Items             []*Item   `json:"items"`
 	Locale            string    `json:"locale"`
 	InternalSignature string    `json:"internal_signature"`
 	CustomerID        string    `json:"customer_id"`

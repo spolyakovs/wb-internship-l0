@@ -39,11 +39,9 @@ func Start(config Config) error {
 
 	st := *store.New(db)
 
-	if err := stanSubscribe(ctx, config); err != nil {
-		return err
-	}
-
 	srv := newServer(ctx, st)
+
+	go srv.stanSubscribe(ctx, config)
 
 	return http.ListenAndServe(config.BindAddr, srv)
 }

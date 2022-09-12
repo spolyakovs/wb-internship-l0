@@ -36,8 +36,10 @@ func (p paymentRepository) Create(ctx context.Context, payment *model.Payment) e
 
 func (p paymentRepository) FindByID(ctx context.Context, id uint) (*model.Payment, error) {
 	payment := model.Payment{}
-	findByIdQuery := "SELECT (id, chrt_id, track_number, price, rid, name, sale, nm_id, brand, status)" +
-		" FROM items WHERE id = $1 LIMIT 1;"
+	findByIdQuery := "SELECT " +
+		"id, transaction, request_id, currency, provider, amount, " +
+		"payment_dt, bank, delivery_cost, goods_total, custom_fee " +
+		"FROM payments WHERE id = $1 LIMIT 1;"
 
 	if err := p.store.db.QueryRowContext(ctx,
 		findByIdQuery,

@@ -26,7 +26,7 @@ func (o orderRepository) Create(ctx context.Context, order *model.Order) error {
 	}
 
 	// Creating main entity
-	createQuery := "INSERT INTO payments " +
+	createQuery := "INSERT INTO orders " +
 		"(order_uid, track_number, entry, delivery_id, payment_id, " +
 		"locale, internal_signature, customer_id, delivery_service, " +
 		"shardkey, sm_id, date_created, oof_shard) " +
@@ -60,7 +60,8 @@ func (o orderRepository) Create(ctx context.Context, order *model.Order) error {
 
 	// Connecting order with its items through "order_items" entity
 	for _, item := range order.Items {
-		connectQuery := "INSERT INTO order_items (order_uid, item_id) " +
+		connectQuery := "INSERT INTO order_items " +
+			"(order_uid, item_id) " +
 			"VALUES ($1, $2);"
 		connectRes, err := o.store.db.ExecContext(ctx, connectQuery,
 			order.OrderUID,
@@ -86,10 +87,11 @@ func (o orderRepository) FindByID(ctx context.Context, order_uid string) (*model
 	var delivery_id, payment_id uint
 
 	// Finding main order fields, delivery_id and payment_id
-	findByIdQuery := "SELECT (order_uid, track_number, entry, delivery_id, payment_id, " +
+	findByIdQuery := "SELECT " +
+		"order_uid, track_number, entry, delivery_id, payment_id, " +
 		"locale, internal_signature, customer_id, delivery_service, " +
-		"shardkey, sm_id, date_created, oof_shard) " +
-		" FROM items WHERE order_uid = $1 LIMIT 1;"
+		"shardkey, sm_id, date_created, oof_shard " +
+		"FROM orders WHERE order_uid = $1 LIMIT 1;"
 
 	if err := o.store.db.QueryRowContext(ctx,
 		findByIdQuery,
