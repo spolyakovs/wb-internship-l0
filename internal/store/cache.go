@@ -2,6 +2,7 @@ package store
 
 import (
 	"context"
+	"fmt"
 	"sync"
 
 	"github.com/spolyakovs/wb-internship-l0/internal/model"
@@ -29,7 +30,7 @@ func (c *cache) Get(ctx context.Context, order_uid string) (*model.Order, error)
 
 	order, err := c.store.Orders().FindByID(ctx, order_uid)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("couldn't get order from cache with id: %v\n\t%w", order_uid, err)
 	}
 	c.Add(order)
 

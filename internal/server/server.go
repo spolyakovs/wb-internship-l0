@@ -7,17 +7,20 @@ import (
 	"encoding/json"
 
 	"github.com/gorilla/mux"
+	"github.com/sirupsen/logrus"
 	"github.com/spolyakovs/wb-internship-l0/internal/store"
 )
 
 type server struct {
 	router *mux.Router
+	logger *logrus.Logger
 	store  store.Store
 }
 
 func newServer(ctx context.Context, st store.Store) *server {
 	srv := &server{
 		router: mux.NewRouter(),
+		logger: logrus.New(),
 		store:  st,
 	}
 

@@ -2,6 +2,7 @@ package store
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/spolyakovs/wb-internship-l0/internal/model"
 )
@@ -28,7 +29,8 @@ func (p paymentRepository) Create(ctx context.Context, payment *model.Payment) e
 		payment.GoodsTotal,
 		payment.CustomFee,
 	).Scan(&payment.ID); err != nil {
-		return err
+		err = fmt.Errorf("%w: %v", ErrSQLInternal, err)
+		return fmt.Errorf("couldn't create payment: %+v\n\t%w", payment, err)
 	}
 
 	return nil
@@ -57,7 +59,8 @@ func (p paymentRepository) FindByID(ctx context.Context, id uint) (*model.Paymen
 		&payment.GoodsTotal,
 		&payment.CustomFee,
 	); err != nil {
-		return nil, err
+		err = fmt.Errorf("%w: %v", ErrSQLInternal, err)
+		return nil, fmt.Errorf("couldn't find payment with id: %v\n\t%w", id, err)
 	}
 
 	return &payment, nil

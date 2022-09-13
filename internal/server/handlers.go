@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"net/http"
+
+	"github.com/spolyakovs/wb-internship-l0/internal/store"
 )
 
 func (srv *server) handleGetOrder(ctx context.Context) http.HandlerFunc {
@@ -15,11 +17,14 @@ func (srv *server) handleGetOrder(ctx context.Context) http.HandlerFunc {
 		}
 
 		order, err := srv.store.Cache().Get(ctx, orderUID)
-		if err != nil {
-			srv.error(w, req, http.StatusInternalServerError, err)
+		switch {
+		case errors.Is(err, store.ErrSQLNotExist):
+			srv.error(w, req, http.StatusBadRequest, store.ErrSQLNotExist)
+			return
+		case err != nil:
+			srv.error(w, req, http.StatusInternalServerError, store.ErrSQLInternal)
 			return
 		}
 		srv.respond(w, req, http.StatusOK, &order)
-		// return
 	}
 }

@@ -13,32 +13,29 @@ import (
 )
 
 func stanPublishRandom(ctx context.Context, config server.Config) error {
-	// TODO: a lot of returns and canceling ???
-	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second+time.Millisecond)
+	defer cancel()
 	sc, err := stan.Connect(config.STANClusterID, config.STANClientID)
 	if err != nil {
 		cancel()
-		return err
+		return fmt.Errorf("%w: %v", server.ErrSTANInternal, err)
 	}
 	defer sc.Close()
 
 	for {
 		select {
 		case <-ctx.Done():
-			cancel()
 			return nil
 		case <-time.After(time.Second):
 			fakeOrder := model.Order{}
 			if err := faker.FakeData(&fakeOrder); err != nil {
-				cancel()
-				return err
+				return fmt.Errorf("%w: %v", ErrFakerFakeData, err)
 			}
 			fakeOrderBytes, err := json.Marshal(fakeOrder)
 			if err != nil {
-				cancel()
-				return err
+				return fmt.Errorf("%w: %v\n\t", server.ErrJSONMarshal, err)
 			}
-			fmt.Println("Publishing order")
+			fmt.Println("Publishing order with id:", fakeOrder.OrderUID)
 			sc.Publish(config.STANChannel, fakeOrderBytes)
 		}
 	}

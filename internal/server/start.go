@@ -10,12 +10,17 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/sirupsen/logrus"
 	"github.com/spolyakovs/wb-internship-l0/internal/store"
 )
 
 // TODO: wrap and refactor errors
 
 func Start(config Config) error {
+	logger := logrus.New()
+	logger.Level = config.LogLevel
+
+	logger.Info("Starting server")
 
 	ctx, stop := context.WithCancel(context.Background())
 	defer stop()
@@ -25,14 +30,16 @@ func Start(config Config) error {
 
 	go func() {
 		<-appSignal
+		logger.Info("Shutting down server")
 		close(appSignal)
 		stop()
 		os.Exit(0)
 	}()
 
+	logger.Info("Connecting to DB")
 	db, err := newDB(ctx, config)
 	if err != nil {
-		return err
+		return fmt.Errorf("%w: %v", ErrDBCreate, err)
 	}
 
 	defer db.Close()
@@ -40,8 +47,10 @@ func Start(config Config) error {
 	st := *store.New(db)
 
 	srv := newServer(ctx, st)
+	srv.logger.Level = config.LogLevel
 
 	go srv.stanSubscribe(ctx, config)
+	logger.Info("Server started")
 
 	return http.ListenAndServe(config.BindAddr, srv)
 }

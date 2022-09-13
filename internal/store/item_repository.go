@@ -2,6 +2,8 @@ package store
 
 import (
 	"context"
+	"database/sql"
+	"fmt"
 
 	"github.com/spolyakovs/wb-internship-l0/internal/model"
 )
@@ -29,7 +31,8 @@ func (i itemRepository) Create(ctx context.Context, item *model.Item) error {
 		item.Brand,
 		item.Status,
 	).Scan(&item.ID); err != nil {
-		return err
+		err = fmt.Errorf("%w: %v", ErrSQLInternal, err)
+		return fmt.Errorf("couldn't create item: %+v\n\t%w", item, err)
 	}
 
 	return nil
@@ -59,7 +62,12 @@ func (i itemRepository) FindByID(ctx context.Context, id uint) (*model.Item, err
 		&item.Brand,
 		&item.Status,
 	); err != nil {
-		return nil, err
+		if err != sql.ErrNoRows {
+			err = fmt.Errorf("%w: %v", ErrSQLInternal, err)
+		} else {
+			err = fmt.Errorf("%w: %v", ErrSQLNotExist, err)
+		}
+		return nil, fmt.Errorf("couldn't find item with id: %v\n\t%w", id, err)
 	}
 
 	return &item, nil
@@ -79,7 +87,8 @@ func (i itemRepository) FindAllByOrderUID(ctx context.Context, orderUid string) 
 		orderUid,
 	)
 	if err != nil {
-		return nil, err
+		err = fmt.Errorf("%w: %v", ErrSQLInternal, err)
+		return nil, fmt.Errorf("couldn't find items by order_uid: %v\n\t%w", orderUid, err)
 	}
 	defer rows.Close()
 
@@ -99,7 +108,8 @@ func (i itemRepository) FindAllByOrderUID(ctx context.Context, orderUid string) 
 			&item.Brand,
 			&item.Status,
 		); err != nil {
-			return nil, err
+			err = fmt.Errorf("%w: %v", ErrSQLInternal, err)
+			return nil, fmt.Errorf("couldn't scan item into model: %v\n\t%w", orderUid, err)
 		}
 		items = append(items, &item)
 	}
