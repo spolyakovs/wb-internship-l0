@@ -3,7 +3,7 @@ package store
 import (
 	"database/sql"
 
-	"github.com/spolyakovs/wb-internship-l0/internal/model"
+	"github.com/spolyakovs/wb-internship-l0/internal/app/model"
 )
 
 type Store struct {

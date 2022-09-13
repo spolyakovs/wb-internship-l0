@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/spolyakovs/wb-internship-l0/internal/model"
+	"github.com/spolyakovs/wb-internship-l0/internal/app/model"
 )
 
 type cache struct {

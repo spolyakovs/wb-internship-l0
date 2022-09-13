@@ -8,7 +8,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
-	"github.com/spolyakovs/wb-internship-l0/internal/store"
+	"github.com/spolyakovs/wb-internship-l0/internal/app/store"
 )
 
 type server struct {

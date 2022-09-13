@@ -4,7 +4,7 @@ import (
 	"log"
 
 	_ "github.com/lib/pq"
-	"github.com/spolyakovs/wb-internship-l0/internal/server"
+	"github.com/spolyakovs/wb-internship-l0/internal/app/server"
 )
 
 func main() {

@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/spolyakovs/wb-internship-l0/internal/model"
+	"github.com/spolyakovs/wb-internship-l0/internal/app/model"
 )
 
 type deliveryRepository struct {

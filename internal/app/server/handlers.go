@@ -5,7 +5,7 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/spolyakovs/wb-internship-l0/internal/store"
+	"github.com/spolyakovs/wb-internship-l0/internal/app/store"
 )
 
 func (srv *server) handleGetOrder(ctx context.Context) http.HandlerFunc {

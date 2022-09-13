@@ -11,10 +11,14 @@ import (
 	"time"
 
 	"github.com/sirupsen/logrus"
-	"github.com/spolyakovs/wb-internship-l0/internal/store"
+	"github.com/spolyakovs/wb-internship-l0/internal/app/store"
 )
 
-// TODO: wrap and refactor errors
+// TODO: make tests
+// TODO tests: кинуть в стрим валид/невалид
+// TODO tests: репозитории потестить
+// TODO tests: cache vs db
+// TODO tests: get валид/невалид/ничего/нет переменной
 
 func Start(config Config) error {
 	logger := logrus.New()

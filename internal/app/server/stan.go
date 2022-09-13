@@ -6,7 +6,7 @@ import (
 	"fmt"
 
 	stan "github.com/nats-io/stan.go"
-	"github.com/spolyakovs/wb-internship-l0/internal/model"
+	"github.com/spolyakovs/wb-internship-l0/internal/app/model"
 )
 
 func (srv server) stanSubscribe(ctx context.Context, config Config) {
