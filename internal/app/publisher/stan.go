@@ -1,4 +1,4 @@
-package main
+package publisher
 
 import (
 	"context"
@@ -8,12 +8,12 @@ import (
 
 	"github.com/bxcodec/faker/v4"
 	stan "github.com/nats-io/stan.go"
-	"github.com/spolyakovs/wb-internship-l0/internal/model"
-	"github.com/spolyakovs/wb-internship-l0/internal/server"
+	"github.com/spolyakovs/wb-internship-l0/internal/app/model"
+	"github.com/spolyakovs/wb-internship-l0/internal/app/server"
 )
 
-func stanPublishRandom(ctx context.Context, config server.Config) error {
-	ctx, cancel := context.WithTimeout(ctx, 5*time.Second+time.Millisecond)
+func stanPublishValid(ctx context.Context, config server.Config) error {
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second+10*time.Millisecond)
 	defer cancel()
 	sc, err := stan.Connect(config.STANClusterID, config.STANClientID)
 	if err != nil {

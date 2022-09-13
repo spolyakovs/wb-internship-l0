@@ -1,13 +1,13 @@
 package main
 
 import (
-	"context"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
 
-	"github.com/spolyakovs/wb-internship-l0/internal/server"
+	"github.com/spolyakovs/wb-internship-l0/internal/app/publisher"
+	"github.com/spolyakovs/wb-internship-l0/internal/app/server"
 )
 
 func main() {
@@ -18,23 +18,24 @@ func main() {
 	}
 	config.STANClientID += "-publisher"
 
-	ctx, stop := context.WithCancel(context.Background())
-	defer stop()
-
 	appSignal := make(chan os.Signal, 3)
 	signal.Notify(appSignal, os.Interrupt, syscall.SIGTERM)
 
+	pub, err := publisher.NewPublisher(config)
+	if err != nil {
+		log.Fatalf("creating publisher error: %v", err)
+	}
+
 	go func() {
 		<-appSignal
-		stop()
+		pub.STANConnection.Close()
 		os.Exit(0)
 	}()
 
-	if err := customFakerGenerator(); err != nil {
-		log.Fatalf("faker generator err: %v", err)
-	}
+	pub.PublishRandomValid()
+	pub.PublishRandomValid()
+	pub.PublishRandomValid()
+	pub.PublishRandomValid()
 
-	if err := stanPublishRandom(ctx, config); err != nil {
-		log.Fatalf("STAN publish err: %v", err)
-	}
+	pub.STANConnection.Close()
 }
