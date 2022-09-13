@@ -16,7 +16,7 @@ type Publisher struct {
 }
 
 func NewPublisher(config server.Config) (*Publisher, error) {
-	if err := customFakerGenerator(); err != nil {
+	if err := CustomFakerGenerator(); err != nil {
 		return nil, fmt.Errorf("faker generator err: %v", err)
 	}
 

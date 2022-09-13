@@ -8,7 +8,7 @@ import (
 	"github.com/bxcodec/faker/v4"
 )
 
-func customFakerGenerator() error {
+func CustomFakerGenerator() error {
 	// Custom timestamp generator in correct format
 	if err := faker.AddProvider("customFakerTimestamp", func(v reflect.Value) (interface{}, error) {
 		randTimestamp := time.Unix(rand.Int63n(time.Now().Unix()), 0)

@@ -41,12 +41,12 @@ func Start(config Config) error {
 	}()
 
 	logger.Info("Connecting to DB")
-	db, err := newDB(ctx, config)
+	db, err := NewDB(ctx, config)
 	if err != nil {
 		return fmt.Errorf("%w: %v", ErrDBCreate, err)
 	}
-
 	defer db.Close()
+	logger.Info("Successfully connected to DB")
 
 	st := *store.New(db)
 
@@ -59,7 +59,7 @@ func Start(config Config) error {
 	return http.ListenAndServe(config.BindAddr, srv)
 }
 
-func newDB(ctx context.Context, config Config) (*sql.DB, error) {
+func NewDB(ctx context.Context, config Config) (*sql.DB, error) {
 	ctx, cancel := context.WithTimeout(ctx, 1*time.Second)
 	defer cancel()
 
