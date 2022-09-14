@@ -7,7 +7,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func (srv *server) logRequest(next http.Handler) http.Handler {
+func (srv *Server) logRequest(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		logger := srv.logger.WithFields(logrus.Fields{
 			"remote_addr": req.RemoteAddr,

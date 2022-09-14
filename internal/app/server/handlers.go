@@ -8,7 +8,7 @@ import (
 	"github.com/spolyakovs/wb-internship-l0/internal/app/store"
 )
 
-func (srv *server) handleGetOrder(ctx context.Context) http.HandlerFunc {
+func (srv *Server) handleGetOrder(ctx context.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		orderUID := req.URL.Query().Get("id")
 		if orderUID == "" {
@@ -19,6 +19,7 @@ func (srv *server) handleGetOrder(ctx context.Context) http.HandlerFunc {
 		order, err := srv.store.Cache().Get(ctx, orderUID)
 		switch {
 		case errors.Is(err, store.ErrNotExist):
+			srv.logger.Debugf("OrderUID: %v", orderUID)
 			srv.error(w, req, http.StatusBadRequest, store.ErrNotExist)
 			return
 		case err != nil:

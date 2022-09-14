@@ -2,7 +2,6 @@ package store_test
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"os"
 	"testing"
@@ -34,10 +33,10 @@ func TestMain(m *testing.M) {
 	}
 	defer db.Close()
 
-	if err := truncateTables(db); err != nil {
-		fmt.Printf("couldn't truncate db: %v", err)
-		return
-	}
+	// if err := truncateTables(db); err != nil {
+	// 	fmt.Printf("couldn't truncate db: %v", err)
+	// 	return
+	// }
 
 	st = *store.New(db)
 
@@ -49,16 +48,16 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-func truncateTables(db *sql.DB) error {
-	truncateQuery := `TRUNCATE TABLE order_items RESTART IDENTITY CASCADE;
-	TRUNCATE TABLE orders RESTART IDENTITY CASCADE;
-	TRUNCATE TABLE payments  RESTART IDENTITY CASCADE;
-	TRUNCATE TABLE items  RESTART IDENTITY CASCADE;
-	TRUNCATE TABLE deliveries  RESTART IDENTITY CASCADE;`
-	_, err := db.Exec(truncateQuery)
-	if err != nil {
-		return err
-	}
+// func truncateTables(db *sql.DB) error {
+// 	truncateQuery := `TRUNCATE TABLE order_items RESTART IDENTITY CASCADE;
+// 	TRUNCATE TABLE orders RESTART IDENTITY CASCADE;
+// 	TRUNCATE TABLE payments  RESTART IDENTITY CASCADE;
+// 	TRUNCATE TABLE items  RESTART IDENTITY CASCADE;
+// 	TRUNCATE TABLE deliveries  RESTART IDENTITY CASCADE;`
+// 	_, err := db.Exec(truncateQuery)
+// 	if err != nil {
+// 		return err
+// 	}
 
-	return nil
-}
+// 	return nil
+// }

@@ -1,20 +1,27 @@
 package server_test
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"testing"
 
+	_ "github.com/lib/pq"
+
 	"github.com/spolyakovs/wb-internship-l0/internal/app/publisher"
 	"github.com/spolyakovs/wb-internship-l0/internal/app/server"
+	"github.com/spolyakovs/wb-internship-l0/internal/app/store"
 )
 
 var (
-	baseURL string
-	pub     *publisher.Publisher
+	srv *server.Server
+	pub *publisher.Publisher
 )
 
 func TestMain(m *testing.M) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
 	configPath := "../../../configs/local_test.toml"
 	config, err := server.MakeConfigFromFile(configPath)
 	if err != nil {
@@ -22,12 +29,18 @@ func TestMain(m *testing.M) {
 		return
 	}
 
-	if err := server.Start(config); err != nil {
-		fmt.Printf("coudn't start server:\n\t%v", err)
+	db, err := server.NewDB(ctx, config)
+	if err != nil {
+		fmt.Printf("%v:\n\t%v", server.ErrDBCreate, err)
 		return
 	}
+	defer db.Close()
 
-	baseURL = config.BindAddr
+	st := *store.New(db)
+
+	srv = server.NewServer(ctx, st, config.LogLevel)
+
+	go srv.StanSubscribe(ctx, config)
 
 	pub, err = publisher.NewPublisher(config)
 	if err != nil {

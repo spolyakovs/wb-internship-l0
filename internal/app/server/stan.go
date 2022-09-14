@@ -3,13 +3,14 @@ package server
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 
 	stan "github.com/nats-io/stan.go"
 	"github.com/spolyakovs/wb-internship-l0/internal/app/model"
 )
 
-func (srv server) stanSubscribe(ctx context.Context, config Config) {
+func (srv Server) StanSubscribe(ctx context.Context, config Config) {
 	errChan := make(chan error, 1)
 	defer close(errChan)
 
@@ -24,7 +25,7 @@ func (srv server) stanSubscribe(ctx context.Context, config Config) {
 
 	srv.logger.Infof("Connecting to STAN with clusterID: %v, clientID: %v", config.STANClusterID, config.STANClientID)
 
-	sc, err := stan.Connect(config.STANClusterID, config.STANClientID)
+	sc, err := stan.Connect(config.STANClusterID, config.STANClientID+"-subscriber")
 	if err != nil {
 		errChan <- fmt.Errorf("%w: connection error: %v", ErrSTANInternal, err)
 		return
@@ -51,26 +52,34 @@ func (srv server) stanSubscribe(ctx context.Context, config Config) {
 		errChan <- fmt.Errorf("%w: subscribe error: %v", ErrSTANInternal, err)
 		return
 	}
+
+	srv.STANConnected = true
 	srv.logger.Info("Successfully subscribed to STAN")
 
 	<-ctx.Done()
+	srv.STANConnected = false
 	sub.Unsubscribe()
 }
 
-func (srv server) handleSTANErrors(ctx context.Context, errChan <-chan error) {
+func (srv Server) handleSTANErrors(ctx context.Context, errChan <-chan error) {
 	for {
 		select {
 		case <-ctx.Done():
 			return
 		case err := <-errChan:
-			if err != nil { // needed because can receive nils when channel is closed
+			switch {
+			case errors.Is(err, ErrSTANReceived):
 				srv.logger.Warnln("STAN error:", err)
+			case err != nil: // needed because can receive nils when channel is closed
+				srv.logger.Errorln("STAN error:", err)
+			default:
+
 			}
 		}
 	}
 }
 
-func (srv server) handleSTANdata(
+func (srv Server) handleSTANdata(
 	ctx context.Context,
 	dataChan <-chan model.Order,
 	errChan chan<- error,

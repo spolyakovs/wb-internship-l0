@@ -14,8 +14,6 @@ func main() {
 		log.Fatalf("couldn't read config from file:%v\n\tpath:%s", err, configPath)
 	}
 
-	config.STANClientID += "-subscriber"
-
 	if err := server.Start(config); err != nil {
 		log.Fatalf("couldn't start server:%v\n\t", err)
 	}

@@ -11,33 +11,38 @@ import (
 	"github.com/spolyakovs/wb-internship-l0/internal/app/store"
 )
 
-type server struct {
-	router *mux.Router
-	logger *logrus.Logger
-	store  store.Store
+type Server struct {
+	router        *mux.Router
+	logger        *logrus.Logger
+	store         store.Store
+	STANConnected bool
 }
 
-func newServer(ctx context.Context, st store.Store) *server {
-	srv := &server{
-		router: mux.NewRouter(),
-		logger: logrus.New(),
-		store:  st,
+func NewServer(ctx context.Context, st store.Store, loggerLever logrus.Level) *Server {
+	srv := &Server{
+		router:        mux.NewRouter(),
+		logger:        logrus.New(),
+		store:         st,
+		STANConnected: false,
 	}
+
+	srv.logger.Level = loggerLever
 
 	srv.configureRouter(ctx)
 
 	return srv
 }
 
-func (server *server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	server.router.ServeHTTP(w, req)
+func (srv *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	srv.router.ServeHTTP(w, req)
 }
 
-func (server *server) error(w http.ResponseWriter, req *http.Request, code int, err error) {
-	server.respond(w, req, code, map[string]string{"error": err.Error()})
+func (srv *Server) error(w http.ResponseWriter, req *http.Request, code int, err error) {
+	srv.logger.Debug(err)
+	srv.respond(w, req, code, map[string]string{"error": err.Error()})
 }
 
-func (server *server) respond(w http.ResponseWriter, req *http.Request, code int, data interface{}) {
+func (srv *Server) respond(w http.ResponseWriter, req *http.Request, code int, data interface{}) {
 	w.WriteHeader(code)
 	w.Header().Set("Content-Type", "application/json")
 	if data != nil {

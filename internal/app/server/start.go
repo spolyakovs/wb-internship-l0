@@ -44,10 +44,9 @@ func Start(config Config) error {
 
 	st := *store.New(db)
 
-	srv := newServer(ctx, st)
-	srv.logger.Level = config.LogLevel
+	srv := NewServer(ctx, st, config.LogLevel)
 
-	go srv.stanSubscribe(ctx, config)
+	go srv.StanSubscribe(ctx, config)
 	logger.Info("Server started")
 
 	return http.ListenAndServe(config.BindAddr, srv)

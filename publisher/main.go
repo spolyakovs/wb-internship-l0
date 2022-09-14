@@ -16,7 +16,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("config err: %v", err)
 	}
-	config.STANClientID += "-publisher"
 
 	appSignal := make(chan os.Signal, 3)
 	signal.Notify(appSignal, os.Interrupt, syscall.SIGTERM)
@@ -31,10 +30,15 @@ func main() {
 		os.Exit(0)
 	}()
 
+	if err := pub.PublishInvalid(); err != nil {
+		pub.STANConnection.Close()
+		log.Fatalf("error while publishing invalid data: %v", err)
+	}
+
 	for i := 0; i < 4; i++ {
 		if _, err := pub.PublishRandomValid(); err != nil {
 			pub.STANConnection.Close()
-			log.Fatalf("error while publishing random order: %v", err)
+			log.Fatalf("error while publishing random valid order: %v", err)
 		}
 	}
 

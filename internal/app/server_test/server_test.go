@@ -3,7 +3,9 @@ package server_test
 import (
 	"encoding/json"
 	"net/http"
+	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/spolyakovs/wb-internship-l0/internal/app/model"
 )
@@ -18,7 +20,7 @@ func TestServerFunctions(t *testing.T) {
 	}
 
 	t.Run("Get without ID", func(t *testing.T) {
-		res, err := http.Get(baseURL)
+		res, err := serverGet("/")
 		if err != nil {
 			t.Errorf("unable to complete GET request without ID:%v", err)
 			return
@@ -31,7 +33,7 @@ func TestServerFunctions(t *testing.T) {
 	})
 
 	t.Run("Get with empty ID", func(t *testing.T) {
-		res, err := http.Get(baseURL + "?id=")
+		res, err := serverGet("/?id=")
 		if err != nil {
 			t.Errorf("unable to complete GET request with empty ID:%v", err)
 			return
@@ -44,7 +46,7 @@ func TestServerFunctions(t *testing.T) {
 	})
 
 	t.Run("Get with non-existent ID", func(t *testing.T) {
-		res, err := http.Get(baseURL + "?id=not_exists")
+		res, err := serverGet("/?id=not_exists")
 		if err != nil {
 			t.Errorf("unable to complete GET request with non-existent ID:%v", err)
 			return
@@ -57,14 +59,15 @@ func TestServerFunctions(t *testing.T) {
 	})
 
 	t.Run("Get with valid ID", func(t *testing.T) {
-		res, err := http.Get(baseURL + "?id=" + orderUIDRandom)
+		time.Sleep(200 * time.Millisecond)
+		res, err := serverGet("/?id=" + orderUIDRandom)
 		if err != nil {
 			t.Errorf("unable to complete GET request with valid ID:%v", err)
 			return
 		}
 
 		if res.StatusCode != http.StatusOK {
-			t.Errorf("request with valid ID returned wrong status code:\n\tgot: %v\n\twanted: %v", res.StatusCode, http.StatusBadRequest)
+			t.Errorf("request with valid ID (%v) returned wrong status code:\n\tgot: %v\n\twanted: %v", orderUIDRandom, res.StatusCode, http.StatusOK)
 			return
 		}
 
@@ -79,4 +82,14 @@ func TestServerFunctions(t *testing.T) {
 		}
 	})
 
+}
+
+func serverGet(path string) (*http.Response, error) {
+	req, err := http.NewRequest(http.MethodGet, path, nil)
+	if err != nil {
+		return nil, err
+	}
+	w := httptest.NewRecorder()
+	srv.ServeHTTP(w, req)
+	return w.Result(), nil
 }
