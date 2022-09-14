@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"log"
 	"os"
 	"testing"
 
@@ -18,14 +17,15 @@ import (
 var st store.Store
 
 func TestMain(m *testing.M) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
 	configPath := "../../../configs/local_test.toml"
 	config, err := server.MakeConfigFromFile(configPath)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Printf("couldn't read config from file:%v\n\tpath:%s", err, configPath)
+		return
 	}
-
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
 
 	db, err := server.NewDB(ctx, config)
 	if err != nil {

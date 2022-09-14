@@ -11,12 +11,12 @@ func main() {
 	configPath := "./configs/local.toml"
 	config, err := server.MakeConfigFromFile(configPath)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("couldn't read config from file:%v\n\tpath:%s", err, configPath)
 	}
 
 	config.STANClientID += "-subscriber"
 
 	if err := server.Start(config); err != nil {
-		log.Fatal(err)
+		log.Fatalf("couldn't start server:%v\n\t", err)
 	}
 }
