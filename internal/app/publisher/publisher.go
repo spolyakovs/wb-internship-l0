@@ -29,18 +29,18 @@ func NewPublisher(config server.Config) (*Publisher, error) {
 	return &publisher, nil
 }
 
-func (publisher Publisher) PublishRandomValid() error {
+func (publisher Publisher) PublishRandomValid() (string, error) {
 	fakeOrder := model.Order{}
 	if err := faker.FakeData(&fakeOrder); err != nil {
-		return fmt.Errorf("%w: %v", ErrFakerFakeData, err)
+		return "", fmt.Errorf("%w: %v", ErrFakerFakeData, err)
 	}
 	fakeOrderBytes, err := json.Marshal(fakeOrder)
 	if err != nil {
-		return fmt.Errorf("%w: %v\n\t", server.ErrJSONMarshal, err)
+		return "", fmt.Errorf("%w: %v\n\t", server.ErrJSONMarshal, err)
 	}
 	fmt.Println("Publishing order with id:", fakeOrder.OrderUID)
 	publisher.STANConnection.Publish(publisher.STANChannel, fakeOrderBytes)
-	return nil
+	return fakeOrder.OrderUID, nil
 }
 
 func (publisher Publisher) PublishInvalid() error {

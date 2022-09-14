@@ -28,14 +28,15 @@ func main() {
 
 	go func() {
 		<-appSignal
-		pub.STANConnection.Close()
 		os.Exit(0)
 	}()
 
-	pub.PublishRandomValid()
-	pub.PublishRandomValid()
-	pub.PublishRandomValid()
-	pub.PublishRandomValid()
+	for i := 0; i < 4; i++ {
+		if _, err := pub.PublishRandomValid(); err != nil {
+			pub.STANConnection.Close()
+			log.Fatalf("error while publishing random order: %v", err)
+		}
+	}
 
 	pub.STANConnection.Close()
 }
