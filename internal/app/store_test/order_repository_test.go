@@ -53,7 +53,7 @@ func TestOrderRepositoryFindById(t *testing.T) {
 	}
 
 	if !equalOrders(*orderFound, orderRandom) {
-		t.Errorf("found another order\n\twanted: %+v\n\tfound: %+v", orderRandom, orderFound)
+		t.Errorf("found another order\n\tfound: %+v\n\twanted: %+v", orderFound, orderRandom)
 	}
 }
 

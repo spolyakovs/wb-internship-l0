@@ -52,7 +52,7 @@ func TestItemRepositoryFindById(t *testing.T) {
 	}
 
 	if *itemFound != itemRandom {
-		t.Errorf("found another item\n\twanted: %+v\n\tfound: %+v", itemRandom, itemFound)
+		t.Errorf("found another item\n\tfound: %+v\n\twanted: %+v", itemFound, itemRandom)
 	}
 }
 
@@ -86,7 +86,7 @@ func TestItemRepositoryFindAllByOrderUID(t *testing.T) {
 	}
 
 	if !equalItems(itemsFound, orderRandom.Items) {
-		t.Errorf("found other items for order\n\twanted: %+v\n\tfound: %+v", orderRandom.Items, itemsFound)
+		t.Errorf("found other items for order\n\tfound: %+v\n\twanted: %+v", itemsFound, orderRandom.Items)
 	}
 }
 

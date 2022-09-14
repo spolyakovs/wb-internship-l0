@@ -49,6 +49,6 @@ func TestDeliveryRepositoryFindById(t *testing.T) {
 	}
 
 	if *deliveryFound != deliveryRandom {
-		t.Errorf("found another delivery\n\twanted: %+v\n\tfound: %+v", deliveryRandom, deliveryFound)
+		t.Errorf("found another delivery\n\tfound: %+v\n\twanted: %+v", deliveryFound, deliveryRandom)
 	}
 }

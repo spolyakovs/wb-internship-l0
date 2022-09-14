@@ -14,12 +14,6 @@ import (
 	"github.com/spolyakovs/wb-internship-l0/internal/app/store"
 )
 
-// TODO: make tests
-// TODO tests: кинуть в стрим валид/невалид
-// TODO tests: репозитории потестить
-// TODO tests: cache vs db
-// TODO tests: get валид/невалид/ничего/нет переменной
-
 func Start(config Config) error {
 	logger := logrus.New()
 	logger.Level = config.LogLevel

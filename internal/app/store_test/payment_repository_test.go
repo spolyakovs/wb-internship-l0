@@ -48,6 +48,6 @@ func TestPaymentRepositoryFindById(t *testing.T) {
 	}
 
 	if *paymentFound != paymentRandom {
-		t.Errorf("found another payment\n\twanted: %+v\n\tfound: %+v", paymentRandom, paymentFound)
+		t.Errorf("found another payment\n\tfound: %+v\n\twanted: %+v", paymentFound, paymentRandom)
 	}
 }

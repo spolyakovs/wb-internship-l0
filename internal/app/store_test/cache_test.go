@@ -50,7 +50,7 @@ func TestCache(t *testing.T) {
 		return
 	}
 	if !equalOrders(*orderFound1, orderRandom) {
-		t.Errorf("got another order from cache \n\twanted: %+v\n\tfound: %+v", orderRandom, orderFound1)
+		t.Errorf("got another order from cache\n\tfound: %+v\n\twanted: %+v", orderFound1, orderRandom)
 	}
 
 	orderFound2, err := st.Cache().Get(ctx, orderRandom.OrderUID)
@@ -59,6 +59,6 @@ func TestCache(t *testing.T) {
 		return
 	}
 	if !equalOrders(*orderFound2, orderRandom) {
-		t.Errorf("got another order from cache second time\n\twanted: %+v\n\tfound: %+v", orderRandom, orderFound2)
+		t.Errorf("got another order from cache second time\n\tfound: %+v\n\twanted: %+v", orderFound2, orderRandom)
 	}
 }
