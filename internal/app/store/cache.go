@@ -14,13 +14,19 @@ type cache struct {
 	data  map[string]*model.Order
 }
 
-func (c *cache) Add(order *model.Order) {
+func (c *cache) Put(order *model.Order) {
+	// put only valid orders
+	if err := order.Validate(); err != nil {
+		return
+	}
+
 	c.Lock()
 	c.data[order.OrderUID] = order
 	c.Unlock()
 }
 
 func (c *cache) Get(ctx context.Context, order_uid string) (*model.Order, error) {
+	// if order alreay in cache, then return it
 	c.RLock()
 	order, ok := c.data[order_uid]
 	c.RUnlock()
@@ -28,11 +34,12 @@ func (c *cache) Get(ctx context.Context, order_uid string) (*model.Order, error)
 		return order, nil
 	}
 
+	// else get order from DB, put it in cache and return
 	order, err := c.store.Orders().FindByID(ctx, order_uid)
 	if err != nil {
 		return nil, fmt.Errorf("couldn't get order from cache with id: %v\n\t%w", order_uid, err)
 	}
-	c.Add(order)
+	c.Put(order)
 
 	return order, nil
 }
