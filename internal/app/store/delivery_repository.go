@@ -54,7 +54,7 @@ func (d deliveryRepository) FindByID(ctx context.Context, id uint) (*model.Deliv
 		if err != sql.ErrNoRows {
 			err = fmt.Errorf("%w: %v", ErrSQLInternal, err)
 		} else {
-			err = fmt.Errorf("%w: %v", ErrSQLNotExist, err)
+			err = fmt.Errorf("%w: %v", ErrNotExist, err)
 		}
 		return nil, fmt.Errorf("couldn't find delivery with id: %v\n\t%w", id, err)
 	}

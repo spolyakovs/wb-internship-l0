@@ -3,6 +3,7 @@ package store
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/spolyakovs/wb-internship-l0/internal/app/model"
@@ -13,6 +14,12 @@ type orderRepository struct {
 }
 
 func (o orderRepository) Create(ctx context.Context, order *model.Order) error {
+	if _, err := o.FindByID(ctx, order.OrderUID); err == nil {
+		return fmt.Errorf("order: %w\n\torder: %v", ErrAlreadyExist, order)
+	} else if !errors.Is(err, ErrNotExist) {
+		return fmt.Errorf("couldn't create order: %w\n\torder: %v", err, order)
+	}
+
 	// Creating sub-entities
 	if err := o.store.Deliveries().Create(ctx, order.Delivery); err != nil {
 		return fmt.Errorf("couldn't create order.delivery\n\t%w", err)
@@ -119,7 +126,7 @@ func (o orderRepository) FindByID(ctx context.Context, order_uid string) (*model
 		if err != sql.ErrNoRows {
 			err = fmt.Errorf("%w: %v", ErrSQLInternal, err)
 		} else {
-			err = fmt.Errorf("%w: %v", ErrSQLNotExist, err)
+			err = fmt.Errorf("%w: %v", ErrNotExist, err)
 		}
 		return nil, fmt.Errorf("couldn't find order with order_uid: %v\n\t%w", order_uid, err)
 	}

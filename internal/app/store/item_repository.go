@@ -65,7 +65,7 @@ func (i itemRepository) FindByID(ctx context.Context, id uint) (*model.Item, err
 		if err != sql.ErrNoRows {
 			err = fmt.Errorf("%w: %v", ErrSQLInternal, err)
 		} else {
-			err = fmt.Errorf("%w: %v", ErrSQLNotExist, err)
+			err = fmt.Errorf("%w: %v", ErrNotExist, err)
 		}
 		return nil, fmt.Errorf("couldn't find item with id: %v\n\t%w", id, err)
 	}

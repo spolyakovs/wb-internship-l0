@@ -18,8 +18,8 @@ func (srv *server) handleGetOrder(ctx context.Context) http.HandlerFunc {
 
 		order, err := srv.store.Cache().Get(ctx, orderUID)
 		switch {
-		case errors.Is(err, store.ErrSQLNotExist):
-			srv.error(w, req, http.StatusBadRequest, store.ErrSQLNotExist)
+		case errors.Is(err, store.ErrNotExist):
+			srv.error(w, req, http.StatusBadRequest, store.ErrNotExist)
 			return
 		case err != nil:
 			srv.error(w, req, http.StatusInternalServerError, store.ErrSQLInternal)
