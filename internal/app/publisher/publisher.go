@@ -22,7 +22,7 @@ func NewPublisher(config server.Config) (*Publisher, error) {
 		return nil, fmt.Errorf("faker generator err: %v", err)
 	}
 
-	sc, err := stan.Connect(config.STANClusterID, config.STANClientID)
+	sc, err := stan.Connect(config.STANClusterID, config.STANClientID+"-publisher")
 	if err != nil {
 		return nil, fmt.Errorf("%w: connection error: %v", server.ErrSTANInternal, err)
 	}
