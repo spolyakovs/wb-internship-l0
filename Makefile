@@ -1,7 +1,7 @@
 .PHONY: build
 build:
-	go build -o ./bin/service ./service/
-	go build -o ./bin/publisher ./publisher/
+	go build -o ./cmd/service ./service/
+	go build -o ./cmd/publisher ./publisher/
 
 .PHONY: test
 test:
@@ -10,12 +10,12 @@ test:
 
 .PHONY: service
 service:
-	go build -o ./bin/service ./service/
+	go build -o ./cmd/service ./service/
 	./bin/service
 
 .PHONY: publisher
 publisher:
-	go build -o ./bin/publisher ./publisher/
+	go build -o ./cmd/publisher ./publisher/
 	./bin/publisher
 
 .DEFAULT_GOAL := service

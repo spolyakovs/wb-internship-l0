@@ -18,4 +18,4 @@ configs/*
 !configs/example.toml
 
 go.sum
-bin/
+cmd/
